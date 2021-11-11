@@ -23,12 +23,11 @@ async function run() {
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
         const ratingsCollection = database.collection('ratings');
+        const usersCollection = database.collection('users');
 
         //GET API
         app.get('/products', async(req, res)=>{
-            const email = req.query.email;
-            const query = {email: email}
-            const cursor = productsCollection.find({query})
+            const cursor = productsCollection.find()
             const product = await cursor.toArray();
             res.send(product);
         })
@@ -54,6 +53,13 @@ async function run() {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             // console.log(result)
+            res.json(result)
+        })
+        //POST API for save User 
+        app.post('/users', async(req, res)=>{
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
             res.json(result)
         })
     }
