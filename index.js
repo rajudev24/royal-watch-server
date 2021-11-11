@@ -21,6 +21,8 @@ async function run() {
         await client.connect();
         const database = client.db('Royal-Wrists');
         const productsCollection = database.collection('products');
+        const ordersCollection = database.collection('orders');
+        const ratingsCollection = database.collection('ratings');
 
         //GET API
         app.get('/products', async(req, res)=>{
@@ -38,7 +40,12 @@ async function run() {
         })
 
         //POST API 
-        
+        app.post('/orders', async(req, res)=>{
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
+            // console.log(result)
+            res.json(result)
+        })
     }
     finally{
         // await client.close()
