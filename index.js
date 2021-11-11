@@ -26,7 +26,9 @@ async function run() {
 
         //GET API
         app.get('/products', async(req, res)=>{
-            const cursor = productsCollection.find({})
+            const email = req.body;
+            const query = {email: email}
+            const cursor = productsCollection.find({query})
             const product = await cursor.toArray();
             res.send(product);
         })
