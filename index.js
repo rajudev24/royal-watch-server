@@ -36,10 +36,11 @@ async function run() {
         app.get('/orders', async(req, res)=>{
             const email = req.query.email;
             const query = {email: email}
-            const cursor = ordersCollection.find({query})
+            const cursor = ordersCollection.find(query)
             const product = await cursor.toArray();
-            res.send(product);
+            res.json(product);
         })
+
         //GET Single Product
         app.get('/products/:id', async(req, res)=>{
             const id = req.params.id;
