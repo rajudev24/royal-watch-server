@@ -22,7 +22,7 @@ async function run() {
         const database = client.db('Royal-Wrists');
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
-        const ratingsCollection = database.collection('ratings');
+        const reviewsCollection = database.collection('reviews');
         const usersCollection = database.collection('users');
 
         //GET API
@@ -30,6 +30,12 @@ async function run() {
             const cursor = productsCollection.find()
             const product = await cursor.toArray();
             res.send(product);
+        })
+        //GET API for show ALl orders
+        app.get('/orders', async(req,res)=>{
+            const cursor = ordersCollection.find();
+            const orders = await cursor.toArray();
+            res.send(orders);
         })
         //GET Orders by email
         app.get('/orders', async(req, res)=>{
@@ -48,6 +54,18 @@ async function run() {
             res.json(product);
         })
 
+        //Get API for admin 
+        app.get('/users/:email', async(req,res)=>{
+            const email = req.params.email;
+            const query = {email: email}
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if(user?.role === 'admin'){
+                isAdmin = true;
+            }
+            res.json({admin: isAdmin})
+        })
+
         //POST API 
         app.post('/orders', async(req, res)=>{
             const order = req.body;
@@ -59,8 +77,52 @@ async function run() {
         app.post('/users', async(req, res)=>{
             const user = req.body;
             const result = await usersCollection.insertOne(user);
-            console.log(result);
+            // console.log(result);
             res.json(result)
+        })
+        //POST API for user review
+        app.post('/reviews', async(req,res)=>{
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            // console.log(result)
+            res.json(result);
+        })
+
+        //POST API for add product
+        app.post('/products', async(req, res)=>{
+            const product =  req.body;
+            const result = await productsCollection.insertOne(product);
+            res.json(result)
+        })
+
+        //Update & set admin 
+
+        app.put('/users', async(req, res)=>{
+            const user = req.body;
+            const filter = {email: user.email};
+            const updateDoc = {$set: {role: 'admin'}};
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.json(result)
+        })
+
+        //Delete API for admin delete product
+        app.delete('/products/:id', async(req,res)=>{
+            const id = req.params.id;
+            // console.log('delete product by id', id)
+            const query = {_id: ObjectId(id)};
+            const result = await productsCollection.deleteOne(query);
+            // console.log(result)
+            res.json(result);
+        })
+
+        // Delete API for user cancel order
+        app.delete('/orders/:id', async(req,res)=>{
+            const id = req.params.id;
+            // console.log('delete product by id', id)
+            const query = {_id: ObjectId(id)};
+            const result = await ordersCollection.deleteOne(query);
+            // console.log(result)
+            res.json(result);
         })
     }
     finally{
