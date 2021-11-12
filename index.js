@@ -37,6 +37,12 @@ async function run() {
             const orders = await cursor.toArray();
             res.send(orders);
         })
+        //GET API for review
+        app.get('/reviews', async(req, res)=>{
+            const cursor = reviewsCollection.find();
+            const reviews = await cursor.toArray();
+            res.send(reviews)
+        })
         //GET Orders by email
         app.get('/orders', async(req, res)=>{
             const email = req.query.email;
